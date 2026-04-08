@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoanIQ — AI-Powered Loan Underwriting</title>
+  <meta name="description" content="LoanIQ uses Explainable AI to instantly evaluate your loan application, explain the decision in plain English, and give you actionable financial guidance." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- ─── HEADER ─────────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">
+        <span class="logo-icon" aria-hidden="true">⚡</span>
+        <span class="logo-text">Loan<span class="logo-accent">IQ</span></span>
+      </div>
+      <div class="header-controls" style="display: flex; align-items: center; gap: 16px;">
+        <select id="currencySelector" class="form-input" style="padding: 6px 12px; height: auto; border-radius: 20px; font-size: 0.8rem; background: rgba(129,140,248,0.1); color: var(--clr-primary); font-weight: 600; border-color: rgba(129,140,248,0.3); width: auto;">
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="INR">INR (₹)</option>
+          <option value="JPY">JPY (¥)</option>
+          <option value="CAD">CAD ($)</option>
+          <option value="AUD">AUD ($)</option>
+        </select>
+        <div class="header-badge">AI-Powered Underwriting</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── HERO ──────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-chip">Explainable AI · Real-Time Decisions</div>
+      <h1 class="hero-title">Instant Loan Intelligence<br /><span class="gradient-text">Powered by AI</span></h1>
+      <p class="hero-subtitle">
+        Get a transparent, fair, and data-driven loan decision in seconds —
+        with clear explanations and personalized financial guidance.
+      </p>
+    </div>
+    <div class="hero-glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- ─── TABS NAVIGATION ───────────────────────────────────────────── -->
+  <div class="tabs-container container">
+    <div class="tabs-nav">
+      <button class="tab-btn active" data-tab="tab-loans">🏦 Loan Underwriting</button>
+      <button class="tab-btn" data-tab="tab-cibil">📊 CIBIL & Health</button>
+      <button class="tab-btn" data-tab="tab-wealth">📈 Wealth & Trading</button>
+    </div>
+  </div>
+
+  <!-- ─── MAIN ──────────────────────────────────────────────────────── -->
+  <main class="container" id="app">
+    
+    <!-- === TAB 1: LOAN UNDERWRITING === -->
+    <div class="tab-content active" id="tab-loans">
+      <div class="main-grid">
+
+    <!-- ── APPLICATION FORM ──────────────────────────────────────────── -->
+    <section class="card form-card" aria-label="Loan Application Form">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div>
+          <h2 class="card-title">Application Details</h2>
+          <p class="card-subtitle">Provide your financial information</p>
+        </div>
+      </div>
+
+      <form id="loanForm" novalidate>
+
+        <div class="form-group">
+          <label for="creditScore" class="form-label">
+            Credit Score
+            <span class="label-hint">FICO range: 300–850</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏅</span>
+            <input
+              type="number" id="creditScore" name="creditScore"
+              class="form-input" placeholder="e.g. 720"
+              min="300" max="850" required
+              aria-describedby="creditScoreError"
+            />
+          </div>
+          <span class="field-error" id="creditScoreError" role="alert"></span>
+          <div class="score-bar-container" aria-hidden="true">
+            <div class="score-bar" id="scoreBar"></div>
+            <span class="score-label" id="scoreLabel"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="monthlyIncome" class="form-label">
+            Monthly Income
+            <span class="label-hint">Gross, before taxes</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-icon">💵</span>
+            <input
+              type="number" id="monthlyIncome" name="monthlyIncome"
+              class="form-input" placeholder="e.g. 6500"
+              min="1" required
+              aria-describedby="monthlyIncomeError"
+            />
+          </div>
+          <span class="field-error" id="monthlyIncomeError" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="existingDebt" class="form-label">
+            Monthly Debt Payments
+            <span class="label-hint">Credit cards, loans, etc.</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-icon">💳</span>
+            <input
+              type="number" id="existingDebt" name="existingDebt"
+              class="form-input" placeholder="e.g. 800"
+              min="0" required
+              aria-describedby="existingDebtError"
+            />
+          </div>
+          <span class="field-error" id="existingDebtError" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="loanAmount" class="form-label">
+            Requested Loan Amount
+          </label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏦</span>
+            <input
+              type="number" id="loanAmount" name="loanAmount"
+              class="form-input" placeholder="e.g. 30000"
+              min="1000" required
+              aria-describedby="loanAmountError"
+            />
+          </div>
+          <span class="field-error" id="loanAmountError" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Employment Status</label>
+          <div class="employment-grid" role="radiogroup" aria-label="Employment Status">
+            <label class="emp-option" id="empLabel-employed">
+              <input type="radio" name="employment" value="employed" id="emp-employed" required />
+              <div class="emp-card">
+                <span class="emp-icon">👔</span>
+                <span class="emp-name">Employed</span>
+              </div>
+            </label>
+            <label class="emp-option" id="empLabel-self_employed">
+              <input type="radio" name="employment" value="self_employed" id="emp-self_employed" />
+              <div class="emp-card">
+                <span class="emp-icon">💼</span>
+                <span class="emp-name">Self-Employed</span>
+              </div>
+            </label>
+            <label class="emp-option" id="empLabel-retired">
+              <input type="radio" name="employment" value="retired" id="emp-retired" />
+              <div class="emp-card">
+                <span class="emp-icon">🌅</span>
+                <span class="emp-name">Retired</span>
+              </div>
+            </label>
+            <label class="emp-option" id="empLabel-unemployed">
+              <input type="radio" name="employment" value="unemployed" id="emp-unemployed" />
+              <div class="emp-card">
+                <span class="emp-icon">🔍</span>
+                <span class="emp-name">Unemployed</span>
+              </div>
+            </label>
+          </div>
+          <span class="field-error" id="employmentError" role="alert"></span>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span class="btn-text">Analyze My Application</span>
+          <span class="btn-icon" aria-hidden="true">→</span>
+        </button>
+
+      </form>
+
+      <!-- Quick fill presets -->
+      <div class="presets-row">
+        <span class="presets-label">Quick fill:</span>
+        <button class="preset-btn" id="preset-approved" data-preset="approved">✅ Approved Profile</button>
+        <button class="preset-btn" id="preset-review" data-preset="review">🟡 Review Profile</button>
+        <button class="preset-btn" id="preset-rejected" data-preset="rejected">❌ Rejected Profile</button>
+      </div>
+    </section>
+
+    <!-- ── APPLICATION HISTORY ──────────────────────────────────────── -->
+    <section class="card history-card" aria-label="Application History">
+      <div class="card-header">
+        <div class="card-icon">🕒</div>
+        <div>
+          <h3 class="card-title">Recent Applications</h3>
+          <p class="card-subtitle">Your past scenarios</p>
+        </div>
+      </div>
+      <div id="historyList" class="history-list">
+        <p class="text-muted" style="font-size: 0.8rem;">No recent history.</p>
+      </div>
+    </section>
+  </div>
+  
+  <div>
+
+    <!-- ── RESULTS PANEL ──────────────────────────────────────────────── -->
+    <section class="results-panel" id="resultsPanel" aria-live="polite" aria-atomic="true" hidden>
+
+      <!-- Decision Badge -->
+      <div class="card decision-card" id="decisionCard">
+        <div class="decision-header">
+          <div class="decision-icon-wrap" id="decisionIconWrap">
+            <span class="decision-icon" id="decisionIcon"></span>
+          </div>
+          <div>
+            <p class="decision-label">Underwriting Decision</p>
+            <h2 class="decision-verdict" id="decisionVerdict"></h2>
+          </div>
+        </div>
+        <div class="decision-meta">
+          <div class="meta-item">
+            <span class="meta-label">DTI Ratio</span>
+            <span class="meta-value" id="metaDTI">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Loan-to-Income</span>
+            <span class="meta-value" id="metaLTI">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Risk Class</span>
+            <span class="meta-value" id="metaClass">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Score Meter -->
+      <div class="card meter-card">
+        <div class="card-header">
+          <div class="card-icon">📊</div>
+          <div>
+            <h3 class="card-title">Risk Score</h3>
+            <p class="card-subtitle">0 = Safest · 100 = Highest Risk</p>
+          </div>
+        </div>
+        <div class="meter-container" aria-label="Risk score meter">
+          <svg class="meter-svg" viewBox="0 0 200 120" aria-hidden="true">
+            <defs>
+              <linearGradient id="meterGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#22c55e" />
+                <stop offset="50%" style="stop-color:#f59e0b" />
+                <stop offset="100%" style="stop-color:#ef4444" />
+              </linearGradient>
+            </defs>
+            <!-- Track -->
+            <path class="meter-track" d="M 20 100 A 80 80 0 0 1 180 100" />
+            <!-- Fill arc -->
+            <path class="meter-fill" id="meterFill" d="M 20 100 A 80 80 0 0 1 180 100" />
+            <!-- Needle -->
+            <line class="meter-needle" id="meterNeedle" x1="100" y1="100" x2="100" y2="26" />
+            <!-- Center dot -->
+            <circle cx="100" cy="100" r="5" fill="#a78bfa" />
+          </svg>
+          <div class="meter-value-wrap">
+            <span class="meter-value" id="meterValue">—</span>
+            <span class="meter-unit">/100</span>
+          </div>
+        </div>
+        <div class="meter-legend" aria-hidden="true">
+          <span class="legend-item legend-low">Low Risk</span>
+          <span class="legend-item legend-med">Moderate</span>
+          <span class="legend-item legend-high">High Risk</span>
+        </div>
+      </div>
+
+      <!-- Factor Breakdown -->
+      <div class="card breakdown-card">
+        <div class="card-header">
+          <div class="card-icon">🎯</div>
+          <div>
+            <h3 class="card-title">Risk Factor Breakdown</h3>
+            <p class="card-subtitle">How different components contribute to your score</p>
+          </div>
+        </div>
+        <div class="breakdown-list">
+          <div class="breakdown-item">
+            <div class="bd-label-row">
+              <span class="bd-label">Credit Profile</span>
+              <span class="bd-value" id="bdCreditVal">0/100</span>
+            </div>
+            <div class="bd-bar-bg"><div class="bd-bar-fill" id="bdCreditBar"></div></div>
+          </div>
+          <div class="breakdown-item">
+            <div class="bd-label-row">
+              <span class="bd-label">Debt-to-Income (DTI)</span>
+              <span class="bd-value" id="bdDtiVal">0/100</span>
+            </div>
+            <div class="bd-bar-bg"><div class="bd-bar-fill" id="bdDtiBar"></div></div>
+          </div>
+          <div class="breakdown-item">
+            <div class="bd-label-row">
+              <span class="bd-label">Loan-to-Income (LTI)</span>
+              <span class="bd-value" id="bdLtiVal">0/100</span>
+            </div>
+            <div class="bd-bar-bg"><div class="bd-bar-fill" id="bdLtiBar"></div></div>
+          </div>
+          <div class="breakdown-item">
+            <div class="bd-label-row">
+              <span class="bd-label">Employment Status</span>
+              <span class="bd-value" id="bdEmpVal">0/100</span>
+            </div>
+            <div class="bd-bar-bg"><div class="bd-bar-fill" id="bdEmpBar"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Affordability Calculator -->
+      <div class="card afford-card">
+        <div class="card-header">
+          <div class="card-icon">💰</div>
+          <div>
+            <h3 class="card-title">Estimated Affordability</h3>
+            <p class="card-subtitle">Projected for a 5-year term</p>
+          </div>
+        </div>
+        <div class="afford-grid">
+          <div class="afford-item">
+            <span class="afford-label">Estimated Rate (APR)</span>
+            <span class="afford-value highlight" id="estApr">--%</span>
+          </div>
+          <div class="afford-item">
+            <span class="afford-label">Est. Monthly Payment</span>
+            <span class="afford-value" id="estMonthly">---</span>
+          </div>
+          <div class="afford-item">
+            <span class="afford-label">Total Interest Paid</span>
+            <span class="afford-value" id="estInterest">---</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explanation Panel -->
+      <div class="card" id="explanationCard">
+        <div class="card-header">
+          <div class="card-icon">🔍</div>
+          <div>
+            <h3 class="card-title">Why This Decision?</h3>
+            <p class="card-subtitle">Key factors influencing the outcome</p>
+          </div>
+        </div>
+        <ul class="factor-list" id="explanationList" aria-label="Decision explanations"></ul>
+      </div>
+
+      <!-- Financial Insights -->
+      <div class="card" id="insightsCard">
+        <div class="card-header">
+          <div class="card-icon">💡</div>
+          <div>
+            <h3 class="card-title">Financial Insights</h3>
+            <p class="card-subtitle">What your numbers say about you</p>
+          </div>
+        </div>
+        <ul class="insights-list" id="insightsList" aria-label="Financial insights"></ul>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="card suggestions-card" id="suggestionsCard">
+        <div class="card-header">
+          <div class="card-icon">🚀</div>
+          <div>
+            <h3 class="card-title">Your Action Plan</h3>
+            <p class="card-subtitle">Steps to improve your profile</p>
+          </div>
+        </div>
+        <ul class="suggestions-list" id="suggestionsList" aria-label="Improvement suggestions"></ul>
+      </div>
+
+    </section>
+
+    <!-- ── LOADING STATE ──────────────────────────────────────────────── -->
+    <div class="loading-overlay" id="loadingOverlay" hidden aria-live="polite">
+      <div class="loading-card">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <p class="loading-title">Analyzing Application</p>
+        <p class="loading-sub">Running AI underwriting engine…</p>
+        <div class="loading-steps" id="loadingSteps">
+          <div class="load-step active" id="step1">Validating financial profile</div>
+          <div class="load-step" id="step2">Computing risk metrics</div>
+          <div class="load-step" id="step3">Generating explanations</div>
+        </div>
+      </div>
+    </div>
+
+    </div> <!-- End Results Panel & Main Grid Wrapper -->
+    </div> <!-- End TAB 1 -->
+
+    <!-- === TAB 2: CIBIL & FINANCIAL HEALTH === -->
+    <div class="tab-content hidden" id="tab-cibil">
+      <div class="main-grid">
+        <!-- CIBIL Form -->
+        <section class="card form-card">
+          <div class="card-header">
+            <div class="card-icon">📊</div>
+            <div>
+              <h2 class="card-title">CIBIL & Health Estimator</h2>
+              <p class="card-subtitle">Real-time credit & financial health analysis</p>
+            </div>
+          </div>
+          <form id="cibilForm">
+            <div class="form-group">
+              <label for="cibilIncome" class="form-label">Monthly Income</label>
+              <div class="input-wrapper">
+                <span class="input-icon">💵</span>
+                <input type="number" id="cibilIncome" class="form-input" placeholder="e.g. 50000" min="1" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="onTimePayments" class="form-label">On-time Payment %</label>
+              <div class="input-wrapper">
+                <span class="input-icon">✅</span>
+                <input type="number" id="onTimePayments" class="form-input" placeholder="e.g. 98" min="0" max="100" required />
+              </div>
+              <span class="label-hint">Percentage of bills paid on time</span>
+            </div>
+            <div class="form-group">
+              <label for="creditUtil" class="form-label">Credit Utilization (%)</label>
+              <div class="input-wrapper">
+                <span class="input-icon">💳</span>
+                <input type="number" id="creditUtil" class="form-input" placeholder="e.g. 25" min="0" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="creditAge" class="form-label">Credit History Age (Years)</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🗓️</span>
+                <input type="number" id="creditAge" class="form-input" placeholder="e.g. 5" min="0" required />
+              </div>
+            </div>
+            <button type="submit" class="submit-btn" id="cibilBtn">Analyze My CIBIL</button>
+          </form>
+        </section>
+
+        <!-- CIBIL Results -->
+        <div class="results-panel">
+          <div class="card decision-card" style="border-color: var(--clr-primary);">
+            <div class="card-header" style="justify-content: center; margin-bottom: 0;">
+              <div>
+                <p class="decision-label" style="text-align: center;">Estimated CIBIL Score</p>
+                <h2 class="decision-verdict" id="estimatedCibil" style="font-size: 3rem; color: var(--clr-primary); text-align: center;">---</h2>
+              </div>
+            </div>
+            <div class="score-bar-container" style="height: 12px; margin-top: 20px;">
+              <div class="score-bar" id="cibilScoreBar" style="--pct: 0%; height: 12px;"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🧠</div>
+              <div><h3 class="card-title">Backend AI Analysis</h3><p class="card-subtitle">Deep learning insights pulled from Python API</p></div>
+            </div>
+            <ul class="insights-list" id="cibilPythonInsights">
+              <li class="text-muted">Awaiting analysis... Submit the form to fetch insights.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === TAB 3: WEALTH & TRADING HUB === -->
+    <div class="tab-content hidden" id="tab-wealth">
+      <div class="main-grid">
+        <!-- Wealth Tools -->
+        <section class="card form-card">
+          <div class="card-header">
+            <div class="card-icon">📈</div>
+            <div>
+              <h2 class="card-title">Trading & Wealth Hub</h2>
+              <p class="card-subtitle">50/30/20 Rule & Market Quick-Tips</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="wealthIncome" class="form-label">Your After-Tax Monthly Income</label>
+            <div class="input-wrapper">
+              <span class="input-icon">💸</span>
+              <input type="number" id="wealthIncome" class="form-input" placeholder="e.g. 4000" min="1" />
+            </div>
+          </div>
+          <div class="breakdown-list" style="margin-top: 24px;">
+            <div class="breakdown-item">
+              <div class="bd-label-row"><span class="bd-label">Needs (50%)</span><span class="bd-value highlight" id="bNeeds">0</span></div>
+              <div class="bd-bar-bg"><div class="bd-bar-fill" style="width: 50%; background: #ef4444;"></div></div>
+            </div>
+            <div class="breakdown-item">
+              <div class="bd-label-row"><span class="bd-label">Wants (30%)</span><span class="bd-value highlight" id="bWants">0</span></div>
+              <div class="bd-bar-bg"><div class="bd-bar-fill" style="width: 30%; background: #f59e0b;"></div></div>
+            </div>
+            <div class="breakdown-item">
+              <div class="bd-label-row"><span class="bd-label">Savings/Investing (20%)</span><span class="bd-value highlight" id="bInvest">0</span></div>
+              <div class="bd-bar-bg"><div class="bd-bar-fill" style="width: 20%; background: #22c55e;"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Trading Tips -->
+        <div class="results-panel">
+          <div class="card afford-card">
+            <div class="card-header">
+              <div class="card-icon">🔥</div>
+              <div><h3 class="card-title">Today's Trading Tips</h3><p class="card-subtitle">Curated financial wisdom</p></div>
+            </div>
+            <div class="afford-grid" id="tradingGrid">
+               <!-- Will be populated by JS/Backend -->
+               <div class="afford-item"><span class="afford-label">Tip</span><span class="afford-value" style="font-size: 0.9rem;">Loading...</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>⚡ <strong>LoanIQ</strong> — Explainable AI Underwriting Platform</p>
+      <p class="footer-note">For demonstration purposes only. Not financial advice.</p>
+    </div>
+  </footer>
+
+  <!-- ─── AI CHATBOT WIDGET ─────────────────────────────────────────── -->
+  <div class="chat-widget" id="chatWidget">
+    <button class="chat-toggle" id="chatToggle" aria-label="Open AI Assistant">
+      🤖
+    </button>
+    <div class="chat-window hidden" id="chatWindow">
+      <div class="chat-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.2rem;">🤖</span>
+          <div>
+            <h4 style="font-size: 0.9rem; font-weight: 700;">LoanIQ Assistant</h4>
+            <span style="font-size: 0.7rem; color: var(--clr-primary);">AI Support Online</span>
+          </div>
+        </div>
+        <button class="chat-close" id="chatClose">×</button>
+      </div>
+      <div class="chat-body" id="chatMessages">
+        <div class="chat-msg bot">Hi! I'm the LoanIQ AI Assistant. Ask me about how we make decisions, interest rates, or how to improve your score.</div>
+      </div>
+      <form class="chat-footer" id="chatForm">
+        <input type="text" id="chatInput" placeholder="Ask a question..." required autocomplete="off" />
+        <button type="submit" id="chatSend">➤</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
