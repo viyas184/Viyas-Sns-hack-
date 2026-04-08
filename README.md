@@ -1,3 +1,6 @@
+category : Finance & trading
+problem statement : Build a sysytem that automates loan underwriting decisioins with explainable reasoning
+
 # LoanIQ: One-Stop Financial & Trading Hub ⚡
 
 A comprehensive, responsive financial ecosystem designed to act as a singular endpoint for loan underwriting, credit score estimation, and actionable wealth generation.
